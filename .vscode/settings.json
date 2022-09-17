@@ -1,0 +1,5 @@
+{
+    "editor.renderWhitespace": "trailing",
+    "editor.cursorStyle": "line-thin",
+    "editor.multiCursorModifier": "ctrlCmd"
+}

@@ -1,0 +1,13 @@
+/node_modules
+/tokens
+.env
+/certificates
+boca-limpa.data.json
+mundo-animal.data.json
+_IGNORE_mundo-animal
+_IGNORE_boca-Limpa
+# managed
+**.data.json
+**.node-persist**
+**_IGNORE_**
+# end managed
