@@ -1,0 +1,34 @@
+{
+  "dependencies": {
+    "@open-wa/wa-automate": "^4.46.2",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.0",
+    "consign": "^0.1.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.2",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.3.3",
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.7.8",
+    "nodemon": "^2.0.19",
+    "sequelize": "^6.21.3",
+    "venom-bot": "^4.0.10",
+    "yup": "^0.32.11"
+  },
+  "name": "backbocalimpa",
+  "version": "1.0.0",
+  "description": "backbocalimpa",
+  "main": "src/server/server.js",
+  "scripts": {
+    "dev": "node src/server/servertest.js",
+    "start": "node src/server/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sequelize-cli": "^6.4.1"
+  }
+}
