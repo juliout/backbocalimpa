@@ -31,18 +31,16 @@ const Ip = database.define('ip', {
         type: Sequelize.STRING(100)
     },
     browser: {
-        type: Sequelizee.STRING(100)
+        type: Sequelize.STRING(100)
     },
     sistem: {
         type: Sequelize.STRING(100)
-    }
-  
-})
-
-Ip.belongsTo(User, {
-    constraint: true,
-    foreignKey: 'users_id',
-    onDelete: 'CASCADE',
+    },
+    user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true
+    },
 })
 
 module.exports = Ip

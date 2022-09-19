@@ -1,5 +1,12 @@
 const Sequelize = require('sequelize')
 const database = require('../../database/index')
+const MuralCurtida = require('./muralCurtida')
+const Mural = require('./mural')
+const Comentario = require('./comentario')
+const ComentarioCurtida = require('./comentarioCurtida')
+const Ip = require('./ip')
+const Horario = require('./horario')
+const Rede = require('./rede')
 
 const User = database.define('user', {
     id: {
@@ -49,4 +56,53 @@ const User = database.define('user', {
         type: Sequelize.STRING(100)
     }
 })
+User.hasOne(MuralCurtida)
+MuralCurtida.belongsTo(User, {
+    constraint: true,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+})
+
+User.hasOne(Mural)
+Mural.belongsTo(User, {
+    constraint: true,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+})
+
+User.hasOne(Comentario)
+Comentario.belongsTo(User, {
+    constraint: true,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+})
+
+User.hasOne(ComentarioCurtida)
+ComentarioCurtida.belongsTo(User, {
+    constraint: true,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+})
+
+User.hasOne(Ip)
+Ip.belongsTo(User, {
+    constraint: true,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+})
+
+User.hasMany(Horario)
+Horario.belongsTo(User, {
+    constraint: true,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+})
+
+User.hasMany(Rede)
+Rede.belongsTo(User, {
+    constraint: true,
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+})
+
 module.exports = User

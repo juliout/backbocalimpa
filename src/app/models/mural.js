@@ -1,13 +1,14 @@
 const Sequelize = require('sequelize')
 const database = require('../../database/index')
-const User = require('./user')
+const Comentario = require('./comentario')
+const MuralCurtida = require('./muralCurtida')
 
 const Mural = database.define('mural', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
     },
     title: {
         type: Sequelize.STRING(55),
@@ -19,12 +20,25 @@ const Mural = database.define('mural', {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: '0'
+    },
+    user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey:  true
     }
 })
 
-Mural.belongsTo(User, {
+Mural.hasMany(Comentario)
+Comentario.belongsTo(Mural, {
     constraint: true,
-    foreignKey: 'user_id',
+    foreignKey: Mural.id,
+    onDelete: 'CASCADE',
+})
+
+Mural.hasOne(MuralCurtida)
+MuralCurtida.belongsTo(Mural, {
+    constraint: true,
+    foreignKey: 'mural_id',
     onDelete: 'CASCADE',
 })
 

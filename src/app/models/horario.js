@@ -1,7 +1,5 @@
 const Sequelize = require('sequelize')
 const database = require('../../database/index')
-const User = require('./user')
-const Rede = require('./rede')
 
 const Horario = database.define('horario', {
     id: {
@@ -22,19 +20,17 @@ const Horario = database.define('horario', {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: '1'
-    }
+    },
+    user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true
+    },
+    rede_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true
+    },
 },
 {timestamps: false})
-
-Horario.belongsTo(User, {
-    constraint: true,
-    foreignKey: 'user_id',
-    onDelete: 'CASCADE',
-})
-Horario.belongsTo(Rede, {
-    constraint: true,
-    foreignKey: 'rede_id',
-    onDelete: 'CASCADE',
-})
-
 module.exports = Horario

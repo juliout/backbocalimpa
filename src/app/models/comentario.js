@@ -12,19 +12,17 @@ const Comentario = database.define('comentario', {
     },
     text: {
         type: Sequelize.STRING(255),
+    },
+    mural_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true
+    },
+    user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true
     }
-})
-
-Comentario.belongsTo(User, {
-    constraint: true,
-    foreignKey: 'user_id',
-    onDelete: 'CASCADE',
-})
-
-Comentario.belongsTo(Mural, {
-    constraint: true,
-    foreignKey: 'mural_id',
-    onDelete: 'CASCADE',
-})
+});
 
 module.exports = Comentario

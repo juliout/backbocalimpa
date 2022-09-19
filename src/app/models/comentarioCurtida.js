@@ -9,18 +9,19 @@ const ComentarioCurtida = database.define('comentarioCurtida', {
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
-    }
-})
-
-ComentarioCurtida.belongsTo(User, {
-    constraint: true,
-    foreignKey: 'user_id',
-    onDelete: 'CASCADE',
-})
-ComentarioCurtida.belongsTo(Comentario, {
-    constraint: true,
-    foreignKey: 'comentario_id',
-    onDelete: 'CASCADE',
-})
+    },
+    comentario_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true
+    },
+    user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true
+    },
+},
+{timestamps: false,
+underscored: true});
 
 module.exports = ComentarioCurtida

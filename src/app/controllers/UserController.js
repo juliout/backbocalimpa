@@ -394,7 +394,7 @@ class UserCotnroller {
 
             if(userFind.id === id) {
                 await HorarioModel.update({actived: 0},{where : {user_id : id}}).then(async () => {
-                    await UserModel.destroy({actived: 0},{where: { id : id}}).then(()=>{
+                    await UserModel.update({actived: 0},{where: { id : id}}).then(()=>{
                         return res.status(200).json({ message: 'Usuario e Horarios desativados' })
                     }).catch(e => {
                         throw new Error('nÃ£o foi possivel deletar o usuario.' + e.message)
@@ -528,14 +528,7 @@ class UserCotnroller {
             return res.status(400).json({message: `Error : ${e.message}`})
         }
     }
-
-    //status do servidor do zap/ caso nÃ£o conectado ele aparecera um link no console para ligar o server
-    async WppServerStatus(req, res) {
-        return res.send({
-            qr_code: Sender.qrCode,
-            connected : Sender.isConnected
-        })
-    }
+    
 }
 
 module.exports = new UserCotnroller()

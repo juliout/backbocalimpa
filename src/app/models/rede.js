@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize')
 const database = require('../../database/index')
-const User = require('./user')
-const Social = require('./social')
+const Horario = require('./horario')
 
 const Rede = database.define('rede', {
     id: {
@@ -23,18 +22,23 @@ const Rede = database.define('rede', {
         type : Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: '1'
-        
-    }
+    },
+    user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true        
+    },
+    social_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true        
+    },
 },{timestamps: false})
 
-Rede.belongsTo(User, {
+Rede.hasOne(Horario)
+Horario.belongsTo(Rede, {
     constraint: true,
-    foreignKey: 'user_id',
-    onDelete: 'CASCADE',
-})
-Rede.belongsTo(Social, {
-    constraint: true,
-    foreignKey: 'social_id',
+    foreignKey: 'rede_id',
     onDelete: 'CASCADE',
 })
 
