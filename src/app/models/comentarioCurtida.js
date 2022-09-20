@@ -21,7 +21,6 @@ const ComentarioCurtida = database.define('comentarioCurtida', {
         foreignKey: true
     },
 },
-{timestamps: false,
-underscored: true});
+{timestamps: false});
 
 module.exports = ComentarioCurtida

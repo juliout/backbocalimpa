@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize')
 const database = require('../../database/index')
-const User = require('./user')
 
 const Ip = database.define('ip', {
     id: {

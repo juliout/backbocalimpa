@@ -14,7 +14,9 @@ const Social = database.define('social', {
     }
 },{timestamps: false})
 
-Social.hasOne(Rede)
+Social.hasOne(Rede, {
+    foreignKey: 'social_id',
+})
 Rede.belongsTo(Social, {
     constraint: true,
     foreignKey: 'social_id',

@@ -20,7 +20,6 @@ const MuralCurtida = database.define('muralCurtida', {
         foreignKey: true,        
     }
 },
-{timestamps: false,
-underscored: true})
+{timestamps: false})
 
 module.exports = MuralCurtida

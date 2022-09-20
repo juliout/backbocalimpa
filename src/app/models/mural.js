@@ -21,6 +21,9 @@ const Mural = database.define('mural', {
         allowNull: false,
         defaultValue: '0'
     },
+    type: {
+        type: Sequelize.STRING(100) 
+    },
     user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -28,14 +31,18 @@ const Mural = database.define('mural', {
     }
 })
 
-Mural.hasMany(Comentario)
+Mural.hasMany(Comentario, {
+    foreignKey: 'mural_id'
+})
 Comentario.belongsTo(Mural, {
     constraint: true,
-    foreignKey: Mural.id,
+    foreignKey: 'mural_id',
     onDelete: 'CASCADE',
 })
 
-Mural.hasOne(MuralCurtida)
+Mural.hasOne(MuralCurtida,{
+    foreignKey: 'mural_id',
+})
 MuralCurtida.belongsTo(Mural, {
     constraint: true,
     foreignKey: 'mural_id',

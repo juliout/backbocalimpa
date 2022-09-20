@@ -56,49 +56,63 @@ const User = database.define('user', {
         type: Sequelize.STRING(100)
     }
 })
-User.hasOne(MuralCurtida)
+User.hasOne(MuralCurtida,{
+    foreignKey: 'user_id',
+})
 MuralCurtida.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
 })
 
-User.hasOne(Mural)
+User.hasMany(Mural,{
+    foreignKey: 'user_id'
+})
 Mural.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
 })
 
-User.hasOne(Comentario)
+User.hasMany(Comentario, {
+    foreignKey: 'user_id',
+})
 Comentario.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
 })
 
-User.hasOne(ComentarioCurtida)
+User.hasOne(ComentarioCurtida,{
+    foreignKey: 'user_id',
+})
 ComentarioCurtida.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
 })
 
-User.hasOne(Ip)
+User.hasOne(Ip, {
+    foreignKey: 'user_id',
+})
 Ip.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
 })
 
-User.hasMany(Horario)
+User.hasMany(Horario,{
+    foreignKey: 'user_id',
+})
 Horario.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
 })
 
-User.hasMany(Rede)
+User.hasMany(Rede,{
+    foreignKey: 'user_id',
+})
 Rede.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',

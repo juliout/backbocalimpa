@@ -35,7 +35,9 @@ const Rede = database.define('rede', {
     },
 },{timestamps: false})
 
-Rede.hasOne(Horario)
+Rede.hasOne(Horario, {
+    foreignKey: 'rede_id',
+})
 Horario.belongsTo(Rede, {
     constraint: true,
     foreignKey: 'rede_id',
