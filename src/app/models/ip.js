@@ -40,6 +40,6 @@ const Ip = database.define('ip', {
         allowNull: false,
         foreignKey: true
     },
-})
+},{timestamp:false})
 
 module.exports = Ip

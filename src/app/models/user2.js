@@ -18,10 +18,10 @@ const User = database.define('user', {
     },
     name: {
         type: Sequelize.STRING(255),
-       
     },
     email: {
         type: Sequelize.STRING(255),
+        unique: true
     },
     password: {
         type: Sequelize.STRING(255),
@@ -29,7 +29,6 @@ const User = database.define('user', {
     },
     tel: {
         type: Sequelize.STRING(255),
-        
     },
     actived: {
         type : Sequelize.BOOLEAN,
@@ -53,11 +52,8 @@ const User = database.define('user', {
     image: {
         type: Sequelize.STRING(100)
     },
-    rede: {
-        type: Sequelize.STRING(100)
-    }
-})
-
+   
+},{timestamp:false})
 User.hasOne(MuralCurtida,{
     foreignKey: 'user_id',
 })

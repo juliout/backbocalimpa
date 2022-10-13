@@ -1,18 +1,18 @@
-const MuralModel = require('../models/mural')
-const MuralCurtidaModel = require('../models/muralCurtida')
+const PostModel = require('../models/post')
+const PostCurtidaModel = require('../models/postCurtida')
 const ComentarioModel = require('../models/comentario')
 const ComentarioCurtidaModel = require('../models/comentarioCurtida')
 const UserModel = require('../models/user')
 
 class ForumController {
 
-    async CreateMural(req, res) {
+    async CreatePost(req, res) {
 
         try {
             let {title, text, id, type, link} = req.body
-            
+
             if(!title || !text ||!id) throw new Error ('todos os dados devem ser preenchidos')
-            let muralObj = {
+            let postObj = {
                 title : title,
                 text : text,
                 user_id: id,
@@ -20,50 +20,50 @@ class ForumController {
                 type: type,
                 link: link
             }
-            const mural = await MuralModel.create(muralObj).catch(e=>{throw new Error(e.message)})
-            if(!mural) throw new Error('Não foi possivel Criar o mural')
+            const post = await PostModel.create(postObj).catch(e=>{throw new Error(e.message)})
+            if(!post) throw new Error('Não foi possivel Criar o post')
 
-            res.status(200).json({message: 'mural Criado'})
+            res.status(201).json({message: 'Postagem criada'})
         } catch (error) {
             return res.status(400).json({message: error.message})
         }
 
     }
 
-    async FindAllMural(req, res) {
+    async FindAllPosts(req, res) {
         try {
             let {type} = req.body
-            const mural = await MuralModel.findAll({include:[
+            const post = await PostModel.findAll({ include:[
                 {model: UserModel,attributes:['email', 'name', 'genero', 'cidade', 'datanascimento']},
-                {model:MuralCurtidaModel},
-                {model:ComentarioModel,include:[ComentarioCurtidaModel]},
+                {model:PostCurtidaModel},
+                {model:ComentarioModel,include:[{model:ComentarioCurtidaModel},{model:UserModel,attributes:['name']}]},
             ]})
-            res.status(200).json(mural)
+            res.status(200).json(post)
         } catch (error) {
             return res.status(400).json({message: error.mensagem})
         }
 
     }
 
-    async CurtidaMural(req, res) {
+    async CurtidaPost(req, res) {
         try {
-            let {mural_id, user_id} = req.body
+            let {post_id, user_id} = req.body
             
-            if(!mural_id || !user_id) throw new Error('todos os dados devem ser preenchidos')
+            if(!post_id || !user_id) throw new Error('todos os dados devem ser preenchidos')
 
             let curtidaObj = {
-                mural_id : mural_id,
+                post_id : post_id,
                 user_id : user_id,
             }
-            const findCurtida = await MuralCurtidaModel.findOne({where:{ mural_id: mural_id, user_id: user_id}})
+            const findCurtida = await PostCurtidaModel.findOne({where:{ post_id: post_id, user_id: user_id}})
             if (findCurtida) {
-                await MuralCurtidaModel.destroy({where: {mural_id: mural_id, user_id: user_id}})
+                await PostCurtidaModel.destroy({where: {post_id: post_id, user_id: user_id}})
                 .then(resp=>{
                     return res.status(200).json({message: 'descurtido'})
                 })
                 .catch(e=> { throw new Error(e.message) })
             } else {
-                await MuralCurtidaModel.create(curtidaObj).then(resp=> {
+                await PostCurtidaModel.create(curtidaObj).then(resp=> {
                     return res.status(200).json({message: 'curtido'})
                 }).catch(e=>{ throw new Error(e.message) })
             }
@@ -74,16 +74,16 @@ class ForumController {
 
     async CreateComentario(req, res) {
         try {
-            let {text, user_id, mural_id} = req.body
+            let {text, user_id, post_id} = req.body
 
             let comentarioObj = {
                 text: text,
                 user_id: user_id,
-                mural_id: mural_id
+                post_id: post_id
             }
 
             await ComentarioModel.create(comentarioObj).then(resp=> {
-                return res.status(200).json({message: 'comentario criado'})
+                return res.status(201).json({message: 'comentario criado'})
             }).catch(e=> {throw new Error(e.message)})
         } catch (error) {
             return res.status(400).json({message: error.message})

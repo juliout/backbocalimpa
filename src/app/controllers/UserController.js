@@ -1,11 +1,14 @@
 require('dotenv').config()
 const bcrypt = require('bcrypt')
+const axios = require('axios')
 
 const UserModel = require('../models/user')
 const HorarioModel = require('../models/horario')
 const RedeModel = require('../models/rede')
 const SocialModel = require('../models/social')
-
+const IpModel = require('../models/ip')
+const Loteria= require('../models/loteria')
+const Resultado = require('../models/resultado')
 
 const {validationResult} = require('express-validator')
 
@@ -17,6 +20,7 @@ const SMTP_CONFIG = require('../../config/smtp/smtp')
 
 const AddTime = require('../../helper/AddTime')
 const ReverseDate = require('../../helper/ReverseDate')
+const ReNewIp = require('../../helper/ReNewIp')
 
 
 const transporter = nodemailer.createTransport({
@@ -36,33 +40,37 @@ class UserCotnroller {
     //cria um novo Usuario
     async CreateUser(req, res) {
         try {
-            let {name, email, tel, password ,datanascimento ,uf ,cidade ,genero ,nickname ,image , brekker, lunch, dinner, rede, telegram, site} = req.body
-            let ip = req.ip
-
+            let {name, email, tel, password ,datanascimento ,uf ,cidade ,genero ,nickname ,
+                image , brekker, lunch, dinner, social, socialContact, rede, loteria} = req.body
+                console.log(req.body)
+                
             const erros = validationResult(req)
             const salt = 10;
 
-            if (!name || !email || !tel || !password ) throw new Error('Todos os campos devem ser preenchidos')
+            if (!password ) throw new Error('Todos os campos devem ser preenchidos')
 
-		    const emailUser = await UserModel.findOne({where:{email: email}})
+		    const emailUser = await UserModel.findOne({where:{email: email, rede: rede}})
 		    if (emailUser) throw new Error ('Email já existente')
-            
             //validaÃ§Ã£o do numero do telefone
-            tel = tel.replace(/[^0-9]/g, '')
-            if (tel[2] !== '9') throw new Error('numero de celular invalido')
-            if (tel.length < 10 || tel.length > 11) throw new Error('numero de celular invalido')
+            if(tel) {
+                tel = tel.replace(/[^0-9]/g, '')
+                if (tel[2] !== '9') throw new Error('numero de celular invalido')
+                if (tel.length < 10 || tel.length > 11) throw new Error('numero de celular invalido')
+            }
             
             //verificaÃ§Ã£o do email.
             if (!erros.isEmpty()) throw new Error('E-mail invalido')
 
             //revertendo e verificando data.
-            if (datanascimento.length > 8) throw new Error('data com formato invalido')
-            datanascimento = ReverseDate(datanascimento) 
+            // if(datanascimento) {
+            //     if (datanascimento.length > 8) throw new Error('data com formato invalido')
+            //     datanascimento = ReverseDate(datanascimento)
+            // } 
             
             //senha hash
             password = await bcrypt.hash(password, salt).catch(err=>{throw new Error(err.message)})
             if(!password) throw new Error('nÃ£o foi possivel converter a senha')
-
+            
             let user = {
                 name: name,
                 email: email,
@@ -74,51 +82,50 @@ class UserCotnroller {
                 genero: genero,
                 nickname: nickname,
                 image: image,
-                actived: true
+                actived: true,
+                rede: rede
             }
 
             //criacao de usuario
             const createUsuario = await UserModel.create(user)
-
             if (!createUsuario) throw new Error ('Não foi possivel Criar o usuario!')
-
             let network;
 
-            if (rede){
-                if (rede === 'whatsapp') {
+            if (social){
+                if (social === 'whatsapp') {
                     const createSocial = await SocialModel.create({name: 'whatsapp'}).catch(async err=> {
                         await UserModel.destroy({where:{id : createUsuario.id}})
                         throw new Error ('não foi possivel criar a social' + err.message)
                     })
                     network = {
                         name : 'whatsapp',
-                        contact : tel,
+                        contact : socialContact,
                         actived : true,
                         user_id : createUsuario.id,
                         social_id: createSocial.id
                     }
                 }
-                if (rede === 'email') {
+                if (social === 'e-mail') {
                     const createSocial = await SocialModel.create({name: 'email'}).catch(async err=> {
                         await UserModel.destroy({where:{id : createUsuario.id}})
                         throw new Error ('não foi possivel criar a social '+ err.message)
                     })
                     network = {
                         name : 'email',
-                        contact : email,
+                        contact : socialContact,
                         actived : true,
                         user_id : createUsuario.id,
                         social_id: createSocial.id
                     }
                 }
-                if (rede === 'telegram') {
+                if (social === 'telegram') {
                     const createSocial = await SocialModel.create({name: 'telegram'}).catch(async err=> {
                         await UserModel.destroy({where:{id : createUsuario.id}})
                         throw new Error ('não foi possivel criar a social '+err.message)
                     })
                     network = {
                         name : 'telegram',
-                        contact : telegram,
+                        contact : socialContact,
                         actived : true,
                         user_id : createUsuario.id,
                         social_id: createSocial.id
@@ -138,26 +145,26 @@ class UserCotnroller {
                     }
             }
             const redes = await RedeModel.create(network).catch(error => {throw new Error('não foi possivel criar redes' + error.message)})
-                        console.log(redes)
+            
             if(!redes) throw new Error('redes não foi criada')
 
-            if(site === 'bocaLimpa') {
+            if(rede === 'bocaLimpa') {
 
             // adicionando 30minutos ao horario
             if (brekker && lunch && dinner) {
                 brekker = AddTime(brekker)
                 lunch = AddTime(lunch)
                 dinner = AddTime(dinner)
-            }            
+            }
 
             await HorarioModel.create({
                 name: 'brekker',
-                time : brekker,                    
+                time : brekker,
                 user_id: createUsuario.id,
                 rede_id: redes.id,
                 actived: true,
             }).catch(async e => {
-                console.log('bre')
+                
                 await RedeModel.destroy({where: {user_id: createUsuario.id}})
                 await SocialModel.destroy({where: {id : redes.social_id}})
                 await HorarioModel.destroy({where:{user_id : createUsuario.id}})
@@ -172,7 +179,7 @@ class UserCotnroller {
                 rede_id: redes.id,
                 actived :  true
             }).catch(async e => {
-                console.log('lun')
+              
                 await RedeModel.destroy({where: {user_id: createUsuario.id}})
                 await SocialModel.destroy({where: {id : redes.social_id}})
                 await HorarioModel.destroy({where:{user_id : createUsuario.id}})
@@ -187,14 +194,88 @@ class UserCotnroller {
                 rede_id: redes.id,
                 actived: true
             }).catch(async e => {
-                console.log('dinn')
+               
                 await RedeModel.destroy({where: {user_id: createUsuario.id}})
                 await SocialModel.destroy({where: {id : redes.social_id}})
                 await HorarioModel.destroy({where:{user_id : createUsuario.id}})
                 await UserModel.destroy({where:{id : createUsuario.id}})
                 throw new Error('model dinner nÃ£o foi criada'  + e.message)
             })
-        }
+            }
+            if(rede === 'alerta-da-sorte') {
+                let allLoterias = ['megasena', 'lotofacil', 'duplasena', 'quina', 'supersete', 'timemania', 'lotomania', 'diadesorte', 'federal', 'loteca', 'milionaria']
+                    
+                    loteria.map(n => {
+                        allLoterias = allLoterias.filter(fil => fil!=n)
+                    })
+                    
+                    allLoterias.map(async lote => {
+                        const createLoteria= await Loteria.create({
+                            name: lote,
+                            actived: 0,
+                            user_id: createUsuario.id,
+                            rede_id: redes.id
+                        }).catch(error=> console.log(error))
+                        if(await createLoteria){
+                            await Resultado.create({
+                                resultado: false,
+                                apostas: false,
+                                loteria_id: createLoteria.id
+                            })
+                        }
+                    })
+
+                    loteria.forEach(async lote => {
+                        const createLoteria= await Loteria.create({
+                            name: lote,
+                            actived: 1,
+                            user_id: createUsuario.id,
+                            rede_id: redes.id
+                        }).catch(error=> console.log(error))
+
+                        if(await createLoteria){
+                            await Resultado.create({
+                                resultado: true,
+                                apostas: true,
+                                loteria_id: createLoteria.id
+                            })
+                        }
+                    })
+                
+            }
+            // axios.post('https://api.pluga.co/v1/webhooks/MzkxODcyMTUwMDA4MDgwNzQyMVQxNjU2NjEzOTU2', {
+            //     nome: name,
+            //     sobrenome: '',
+            //     email : email,
+            //     telefone : tel
+            // }).then().catch(err => console.log('não cadastrou'))
+
+            const ReqIp = await ReNewIp(req.ip)
+
+            
+            let IpUser = {}
+
+            if (ReqIp.status !== 'fail') {
+                IpUser ={
+                    country: ReqIp.country,
+                    region: ReqIp.region,
+                    regionName : ReqIp.regionName,
+                    city: ReqIp.city,
+                    zipCode: ReqIp.zip,
+                    isp: ReqIp.isp,
+                    ip: ReqIp.query,
+                    browser: req.body.userAgent,
+                    sistem : req.body.plataform,
+                    user_id: createUsuario.id
+                }
+
+                const registerNewIp = await IpModel.create(IpUser)
+                if(registerNewIp) {
+                    return res.status(201).json({message : 'Usuario devidamente Cadastrado!'})
+                }
+
+            }
+
             return res.status(201).json({message : 'usuario Criado'})
         } catch (e) {
             return res.status(400).json({message: e.message})
@@ -204,13 +285,13 @@ class UserCotnroller {
     //Criando Sessao Login
     async Login(req, res) {
         try {
-            const { email, password } = req.body
-	
+            let { email, password, rede} = req.body
+            
             //achar usuario
-            const userFind = await UserModel.findOne({ where : { email : email } })
-            if (!userFind) throw new Error('Usuario nÃ£o encontrado')
+            const userFind = await UserModel.findOne({ where : { email : email, rede: rede } })
+            if (!userFind) throw new Error('Usuario nao encontrado')
 
-            if ( userFind.actived === false ) throw new Error( 'Usuario EstÃ¡ desativado' ) 
+            if ( userFind.actived === false ) throw new Error( 'Usuario Esta desativado' ) 
             
             //comparar senhar
             const checkPass = await bcrypt.compare(password, userFind.password).catch(err => { throw new Error('erro ao comaprar a senha')})
@@ -220,16 +301,16 @@ class UserCotnroller {
             const token = jwt.sign({userId: userFind.id}, SECRETPASS, {expiresIn: '24h'})
             if (!token) throw new Error('NÃ£o foi possivel Autenticar')
 
-            let dateNow = new Date()
-
+            let nome = userFind.name.split(' ')
+            
             res.status(200).json({
                 user : {
                     id : userFind.id,
                     email : userFind.email,
-                    name: userFind.name,
+                    name: nome[0],
                     token : token,
-                    loginTime: dateNow.toDateString()
-                }, 
+                },
+                message: 'Login Efetuado!' 
             })
         } catch (e) {
            return res.status(400).json({message : e.message})
@@ -308,11 +389,11 @@ class UserCotnroller {
     async AttAll(req, res) {
         try {
             let id = req.userId
-            let { brekker, lunch, dinner, tel, name, email, password } = req.body          
+            let {  tel, name, email, password, rede} = req.body          
 
-            if(!id) return res.status(400).json({message: 'id nÃ£o enviado'})
+            if(!id) throw new Error('id nÃ£o enviado')
 
-            const User = await UserModel.findOne({where : {id : id}})
+            const User = await UserModel.findOne({where : {id : id, rede: rede}})
             if(!User) throw new Error('NÃ£o foi encontrado usuario')
 
             const Horario = await HorarioModel.findAll({where : {user_id : id}, include: [{model : UserModel}]})
@@ -381,9 +462,9 @@ class UserCotnroller {
     //deletar account
     async DeletAccount(req, res) {
         try {
-            let id = req.userId
+            const {password, rede, email} = req.body
             //confirmar usuario
-            const userFind = await UserModel.findOne({ where : { id : id } })
+            const userFind = await UserModel.findOne({ where : { email: email, id : id, rede:rede} })
             if (!userFind) throw new Error('Usuario nÃ£o encontrado')
 
             //confirmar Senha
@@ -392,9 +473,10 @@ class UserCotnroller {
 
             //destroy o horario dps o usuario
 
-            if(userFind.id === id) {
+            if(rede === 'boca-limpa'){
+                
                 await HorarioModel.update({actived: 0},{where : {user_id : id}}).then(async () => {
-                    await UserModel.update({actived: 0},{where: { id : id}}).then(()=>{
+                    await UserModel.update({actived: 0},{where: { id : userFind.id}}).then(()=>{
                         return res.status(200).json({ message: 'Usuario e Horarios desativados' })
                     }).catch(e => {
                         throw new Error('nÃ£o foi possivel deletar o usuario.' + e.message)
@@ -402,10 +484,22 @@ class UserCotnroller {
                 }).catch(e => {
                     throw new Error('nÃ£o foi possivel deletar o horario.' + e.message)
                 })
-            }else {
-                throw new Error('Usuario incapaz de deletar')
+                         
             }
+            if(rede === 'horoscopo'){
+                await UserModel.update({actived:0},{where: {id: userFind.id}})
+                .then(()=>{
+                    return res.status(200).json({ message: 'Usuario desativado' })
+                }).catch(e => {
+                    throw new Error('nÃ£o foi possivel desativar o usuario.' + e.message)
+                })
+            }
+            if(rede === 'mundo-animal'){
 
+            }
+            if(rede === 'alerta-da-sorte') {
+                
+            }
         } catch (e) {
             return res.status(400).json({message: 'NÃ£o foi Possivel executar : ' + e.message})
         }  
@@ -446,15 +540,19 @@ class UserCotnroller {
 
     //rota para indicar um amigo
     async IndicateFriend(req, res) {
-        let {name, tel } = req.body
+        let {name, tel, site} = req.body
        
         try {
+            if(site === 'boca-limpa') {
+                site = 'https://bocalimpa.bigdates.com.br/'
+            } if (site === 'horoscopo') {
 
+            }
             tel = tel.replace(/[^0-9]/g, '')
             if (tel[2] !== '9') throw new Error('numero de celular invalido')
             if (tel.length < 10 || tel.length > 11) throw new Error('numero de celular invalido')
-            console.log(tel)
-            await Sender.sendText(`55${tel}@c.us`, `OlÃ¡ ${name}, vocÃª foi Indicado a usar nosso Sistema, no site https://bocalimpa.bigdates.com.br/, acesse e veja nossas funcionalidades. `)
+    
+            await Sender.sendText(`55${tel}@c.us`, `OlÃ¡ ${name}, vocÃª foi Indicado a usar nosso Sistema, no site ${site}, acesse e veja nossas funcionalidades. `)
                 .then(() => {
                     res.status(200).json({message: 'mensagem enviada com sucesso'})
             }).catch(err => {
@@ -466,10 +564,10 @@ class UserCotnroller {
     }
     //rota para confirmar email de senha esquecida e enviar um email
     async ForgotPass(req, res) {
-        const { email } = req.body
+        const { email, rede } = req.body
 
         try {
-            const findUser = await UserModel.findOne({where: { email : email }})
+            const findUser = await UserModel.findOne({where: { email : email , rede : rede}})
             if (!findUser) throw new Error('NÃ£o foi possivel Encontrar um Usuario com esse Email.')
 
             const token = jwt.sign({userId: findUser.id}, SECRETPASS, {expiresIn: '10m'})
@@ -477,7 +575,7 @@ class UserCotnroller {
             if (!token) throw new Error('nÃ£o foi possivel gerar o token')
             let provpass = Math.floor(1000 + Math.random() * 9000);
 
-            const link = `https://bocalimpa.bigdates.com.br/:${process.env.PORT}/resetpass/${findUser.id}/${provpass}/${token}`
+            const link = `https://bocalimpa.bigdates.com.br/:${process.env.PORT}/resetpass/${findUser.id}/${provpass}/${token}/${rede}`
             let options = {
                 text: ` a nova senha Ã© ${provpass}
                 click no link para resetar a senha ${link}`,
@@ -501,11 +599,11 @@ class UserCotnroller {
 
     //rota para resetar
     async ResetPass(req, res) {
-        const {id, token, provpass} = req.params
+        const {id, token, provpass, rede} = req.params
         let salt = 10
 
         try {
-            const findUser = UserModel.findOne({where: {id : id}})
+            const findUser = UserModel.findOne({where: {id : id, rede: rede}})
             if (!findUser) throw new Error('usuario nÃ£o encontrado')
             let userId;
             await jwt.verify(token, SECRETPASS,(err,encode)=>{
@@ -519,7 +617,7 @@ class UserCotnroller {
 
             const nowPass = await bcrypt.hash(provpass, salt).catch(err=>{throw new Error(err.message)})
 
-            const attUser = UserModel.update({password : nowPass},{where: {id : userId}})
+            const attUser = UserModel.update({password : nowPass},{where: {id : userId, rede:rede}})
 
             if (!attUser) throw new Error('NÃ£o foi possÃ­vel atualizar a senha')
             res.redirect('http://127.0.0.1:5500/index.html')
