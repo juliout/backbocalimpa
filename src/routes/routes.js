@@ -37,4 +37,8 @@ routes.post('/curtidacomentario', auth, ForumController.CurtidaComentario)
 
 routes.post('/alertasorte/allloterias', auth, AlertaSorteController.Allloterias)
 routes.post('/alertasorte/aboutuser', auth, AlertaSorteController.AboutUser)
+routes.post('/alertasorte/attloteria', auth, AlertaSorteController.AttLoterias)
+routes.post('/alertasorte/attuser', auth, AlertaSorteController.AttUser)
+
+
 module.exports = routes;
