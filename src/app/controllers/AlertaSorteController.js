@@ -38,27 +38,29 @@ class AlarmeSorteController {
             const rede = await Rede.findOne({where: {user_id: user.id}})
             const loterias = await Loteria.findAll({where:{user_id: user.id, rede_id:rede.id}})
             .catch(e=>console.error(e.message))
-            req.body.forEach(async lote => {
 
-                await loterias.forEach(async elem => {
-                    if(elem.name === lote.nome){
-                        let objloteria = {
-                            name: lote.name,
-                            actived: lote.actived,
-                            user_id: user.id,
-                            rede_id: rede.id
-                        }
+            let dados = req.body
+            loterias.forEach(async element => {
+                dados.forEach(async dado=> {
+                    if(dado.nome === element.name) {
+                        await Loteria.update({
+                            actived: dado.actived,
+                        },{where: {user_id: element.user_id, rede_id: element.rede_id, name:element.name}})
+                        .catch(e=>console.error(e.message))
                         let objresultado = {
-                            resultado: lote.resultado,
-                            apostas: lote.aposta
+                            resultado: dado.resultado,
+                            apostas: dado.aposta
                         }
-                        await Loteria.update(objloteria,{where: {user_id: elem.user_id, rede_id: elem.rede_id}}).catch(e=>console.error(e.message))
-                        await Resultado.update(objresultado,{where: {loteria_id: elem.id}}).catch(e=>console.error(e.message))
+                        await Resultado.update(objresultado,{where: {loteria_id: element.id}}).catch(e=>console.error(e.message))
+                    }else{
+                        return
                     }
-                });
+                })
             });
+
             res.status(200).json({message: 'atualizado'})
         } catch (error) {
+            console.log(error.message)
             return res.status(400).json({message: error.message})
         }
     }
@@ -91,6 +93,25 @@ class AlarmeSorteController {
         } catch (error) {
             console.log(error.message)
             return res.status(400).json({message: error.message})
+        }
+    }
+
+    async Desativar(req, res) {
+        try {
+            let id = req.userId
+
+            const user = await UserModel.findOne({where:{id, rede: 'alerta-da-sorte'}})
+            if(!user) throw new Error('usuario não acha')
+
+            await UserModel.update({
+                actived: false
+            },{where:{id, rede: 'alerta-da-sorte'}}).then(s=>{
+                return res.status(200).json({message: 'Desabilitado'})
+            }).catch(er=>{
+                throw new Error(er.message)
+            })
+        } catch (error) {
+            return res.status(200).json({message: error.message})
         }
     }
 

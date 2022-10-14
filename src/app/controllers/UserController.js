@@ -42,7 +42,7 @@ class UserCotnroller {
         try {
             let {name, email, tel, password ,datanascimento ,uf ,cidade ,genero ,nickname ,
                 image , brekker, lunch, dinner, social, socialContact, rede, loteria} = req.body
-                console.log(req.body)
+                
                 
             const erros = validationResult(req)
             const salt = 10;
