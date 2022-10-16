@@ -1,7 +1,7 @@
 require('dotenv').config()
 const automateSend = require('../helper/automateSend')
 const cron = require('node-cron')
-//const SenderBocaLimpa = require('../app/services/Senders/bocaLimpa.js')
+const SenderBocaLimpa = require('../app/services/Senders/bocaLimpa.js')
 
 
 const customExpress = require('./../app.js')
@@ -24,4 +24,4 @@ var options = {
     })
 
 
-cron.schedule('*/60 * * * * *', automateSend)
+// cron.schedule('*/60 * * * * *', automateSend)

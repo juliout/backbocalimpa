@@ -11,7 +11,6 @@ const Loteria = database.define('Loteria', {
     },
     name: {
         type: Sequelize.STRING(45),
-        actived: Sequelize.BOOLEAN
     },
     actived: {
         type: Sequelize.BOOLEAN

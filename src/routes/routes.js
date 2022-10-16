@@ -1,9 +1,10 @@
 const routes = require('express').Router()
 const UserController = require('../app/controllers/UserController')
 const ForumController = require('../app/controllers/ForumController')
+const AlertaSorteController = require('../app/controllers/AlertaSorteController')
+const {AllGroupsApi, InviteGenerator} = require('../app/controllers/wppControllers/BlackFridayController')
 const {body} = require('express-validator')
 const auth = require('../app/middleware/auth')
-const AlertaSorteController = require('../app/controllers/AlertaSorteController')
 
 
 routes.post('/createuser',[body('email').isEmail()], UserController.CreateUser)
@@ -40,6 +41,10 @@ routes.post('/alertasorte/aboutuser', auth, AlertaSorteController.AboutUser)
 routes.post('/alertasorte/attloteria', auth, AlertaSorteController.AttLoterias)
 routes.post('/alertasorte/attuser', auth, AlertaSorteController.AttUser)
 routes.post('/alertasorte/desativar', auth, AlertaSorteController.Desativar)
+
+
+routes.get('/blackfriday/allgroups', AllGroupsApi)
+routes.get('/blackfriday/invite', InviteGenerator)
 
 
 module.exports = routes;

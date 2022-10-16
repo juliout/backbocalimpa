@@ -1,8 +1,11 @@
 const app = require('../app2')
 const axios = require('axios')
 const https = require('https')
+const {SaveGroup} = require('../app/controllers/wppControllers/BlackFridayController')
+const teste = require('../app/services/Senders/BocaLimpaSender')
 //const automateSend = require('../helper/automateSend')
-//const cron = require('node-cron')
+const cron = require('node-cron')
+// const Client = teste()
 //const BocaLimpa = require('../app/services/Senders/bocaLimpa')
 //const MundoAnimal = require('../app/services/Senders/mundoAnimal')
 
@@ -14,3 +17,7 @@ app.listen(process.env.PORT || 3000, ()=>{
   //   action()
 })
 
+
+// cron.schedule('*/4 * * * *', async ()=>{
+//   SaveGroup(Client) 
+// })
