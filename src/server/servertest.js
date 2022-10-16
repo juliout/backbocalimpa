@@ -3,11 +3,9 @@ const axios = require('axios')
 const https = require('https')
 const {SaveGroup} = require('../app/controllers/wppControllers/BlackFridayController')
 const teste = require('../app/services/Senders/BocaLimpaSender')
-//const automateSend = require('../helper/automateSend')
 const cron = require('node-cron')
-// const Client = teste()
-//const BocaLimpa = require('../app/services/Senders/bocaLimpa')
-//const MundoAnimal = require('../app/services/Senders/mundoAnimal')
+ const Client = teste()
+
 
 app.listen(process.env.PORT || 3000, ()=>{
     console.log(`server on na porta ${process.env.PORT}`)
@@ -18,6 +16,6 @@ app.listen(process.env.PORT || 3000, ()=>{
 })
 
 
-// cron.schedule('*/4 * * * *', async ()=>{
-//   SaveGroup(Client) 
-// })
+cron.schedule('* */12 * * *', async ()=>{
+  SaveGroup(Client) 
+})
