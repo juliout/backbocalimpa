@@ -2,7 +2,7 @@ const Sequelize = require('sequelize')
 const database = require('../../database/index')
 const Resultado = require('./resultado')
 
-const Loteria = database.define('Loteria', {
+const Loteria = database.define('loteria', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -25,7 +25,7 @@ const Loteria = database.define('Loteria', {
         allowNull: false,
         foreignKey: true
     }
-},{timestamps: false, tableName:'Loterias'})
+},{timestamps: false, tableName:'loterias'})
 
 Loteria.hasOne(Resultado, {
     foreignKey: 'loteria_id',
