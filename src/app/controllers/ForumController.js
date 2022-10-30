@@ -9,13 +9,13 @@ class ForumController {
     async CreatePost(req, res) {
 
         try {
-            let {title, text, id, type, link} = req.body
+            let {title, text, user_id, type, link} = req.body
 
-            if(!title || !text ||!id) throw new Error ('todos os dados devem ser preenchidos')
+            if(!title || !text ||!user_id) throw new Error ('todos os dados devem ser preenchidos')
             let postObj = {
                 title : title,
                 text : text,
-                user_id: id,
+                user_id: user_id,
                 verified: 0,
                 type: type,
                 link: link
@@ -32,17 +32,36 @@ class ForumController {
 
     async FindAllPosts(req, res) {
         try {
+            
             let {type} = req.body
             const post = await PostModel.findAll({ include:[
                 {model: UserModel,attributes:['email', 'name', 'genero', 'cidade', 'datanascimento']},
                 {model:PostCurtidaModel},
                 {model:ComentarioModel,include:[{model:ComentarioCurtidaModel},{model:UserModel,attributes:['name']}]},
-            ]})
+            ]}).catch(e=> {
+                throw new Error(e.message)
+            })
+            
             res.status(200).json(post)
         } catch (error) {
             return res.status(400).json({message: error.mensagem})
         }
 
+    }
+    async FindPost(req, res) {
+        try {
+            let {id} =req.body
+            const post = await PostModel.findOne({where:{id}, include:[
+                {model: UserModel,attributes:['email', 'name', 'genero', 'cidade', 'datanascimento']},
+                {model:PostCurtidaModel},
+                {model:ComentarioModel,include:[{model:ComentarioCurtidaModel},{model:UserModel,attributes:['name']}]},
+            ]}).catch(e=>{
+                throw new Error(e.message)
+            })
+            res.status(200).json(post)
+        } catch (error) {
+            return res.status(400).json({message: error.mensagem})
+        }
     }
 
     async CurtidaPost(req, res) {

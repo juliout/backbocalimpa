@@ -4,6 +4,7 @@ module.exports.SaveGroup = async (Client) => {
     try {
         const group = await (await Client).getAllGroups()
         if(group) {
+            console.log(group[0].groupMetadata.participants)
             group.forEach(async g =>{ 
 
                 const invite = await(await Client).getGroupInviteLink(g.id).catch(e=>{return})
@@ -18,7 +19,7 @@ module.exports.SaveGroup = async (Client) => {
                         invite,
                         members
                     }
-                    console.table(user)
+                    
                     const GroupFind = await GroupModel.findOne({where: {id: id}})
                     if (GroupFind) {
                         await GroupModel.update({

@@ -104,8 +104,7 @@ class UserCotnroller {
                         user_id : createUsuario.id,
                         social_id: createSocial.id
                     }
-                }
-                if (social === 'e-mail') {
+                }else if (social === 'e-mail') {
                     const createSocial = await SocialModel.create({name: 'email'}).catch(async err=> {
                         await UserModel.destroy({where:{id : createUsuario.id}})
                         throw new Error ('não foi possivel criar a social '+ err.message)
@@ -117,8 +116,7 @@ class UserCotnroller {
                         user_id : createUsuario.id,
                         social_id: createSocial.id
                     }
-                }
-                if (social === 'telegram') {
+                }else if (social === 'telegram') {
                     const createSocial = await SocialModel.create({name: 'telegram'}).catch(async err=> {
                         await UserModel.destroy({where:{id : createUsuario.id}})
                         throw new Error ('não foi possivel criar a social '+err.message)
@@ -130,21 +128,23 @@ class UserCotnroller {
                         user_id : createUsuario.id,
                         social_id: createSocial.id
                     }
+                } else {
+                    const createSocial = await SocialModel.create({name: 'whatsapp'}).catch(async err=> {
+                        await UserModel.destroy({where:{id : createUsuario.id}})
+                        throw new Error ('não foi possivel criar a social ' + err.message)
+                    })
+                        network = {
+                            name : 'whatsapp',
+                            contact : tel,
+                            actived : true,
+                            user_id : createUsuario.id,
+                            social_id: createSocial.id
+                        }
                 }
-            }else {
-                const createSocial = await SocialModel.create({name: 'whatsapp'}).catch(async err=> {
-                    await UserModel.destroy({where:{id : createUsuario.id}})
-                    throw new Error ('não foi possivel criar a social ' + err.message)
-                })
-                    network = {
-                        name : 'whatsapp',
-                        contact : tel,
-                        actived : true,
-                        user_id : createUsuario.id,
-                        social_id: createSocial.id
-                    }
+                
             }
-            const redes = await RedeModel.create(network).catch(error => {throw new Error('não foi possivel criar redes' + error.message)})
+            console.log(network)
+            const redes = await RedeModel.create(network).catch(error => {throw new Error('não foi possivel criar redes :' + error.message)})
             
             if(!redes) throw new Error('redes não foi criada')
 

@@ -1,14 +1,14 @@
 const Sequelize = require('sequelize')
 const database = require('../../database/index')
-const MuralCurtida = require('./muralCurtida')
-const Mural = require('./mural')
+const PostCurtidaModel = require('./postCurtida')
+const Post = require('./post')
 const Comentario = require('./comentario')
 const ComentarioCurtida = require('./comentarioCurtida')
 const Ip = require('./ip')
 const Horario = require('./horario')
 const Rede = require('./rede')
 const Loteria = require('./loteria')
-
+const PostCurtida = require('./postCurtida')
 const User = database.define('user', {
     id: {
         type: Sequelize.INTEGER,
@@ -58,19 +58,19 @@ const User = database.define('user', {
     }
 })
 
-User.hasOne(MuralCurtida,{
+User.hasOne(PostCurtida,{
     foreignKey: 'user_id',
 })
-MuralCurtida.belongsTo(User, {
+PostCurtida.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
 })
 
-User.hasMany(Mural,{
+User.hasMany(Post,{
     foreignKey: 'user_id'
 })
-Mural.belongsTo(User, {
+Post.belongsTo(User, {
     constraint: true,
     foreignKey: 'user_id',
     onDelete: 'CASCADE',

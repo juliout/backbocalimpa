@@ -12,7 +12,7 @@ const Comentario = database.define('comentario', {
     text: {
         type: Sequelize.STRING(255),
     },
-    mural_id: {
+    post_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         foreignKey: true
@@ -24,7 +24,7 @@ const Comentario = database.define('comentario', {
     }
 });
 
-Comentario.hasOne(ComentarioCurtida, {
+Comentario.hasMany(ComentarioCurtida, {
     foreignKey: 'comentario_id',
 })
 ComentarioCurtida.belongsTo(Comentario, {

@@ -40,7 +40,7 @@ Comentario.belongsTo(Post, {
     onDelete: 'CASCADE',
 })
 
-Post.hasOne(PostCurtida,{
+Post.hasMany(PostCurtida,{
     foreignKey: 'post_id',
 })
 PostCurtida.belongsTo(Post, {
