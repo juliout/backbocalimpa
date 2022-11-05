@@ -30,11 +30,12 @@ routes.post('/deleteaccount', auth, UserController.DeletAccount) //rota para del
 //rota para todos os murais
 routes.post('/allposts', ForumController.FindAllPosts)
 routes.post('/post', ForumController.FindPost)
+routes.post('/comentario', ForumController.FindComentario)
 
-routes.post('/createpost', ForumController.CreatePost)
-routes.post('/curtidapost', ForumController.CurtidaPost)
-routes.post('/createcomentario', ForumController.CreateComentario)
-routes.post('/curtidacomentario', ForumController.CurtidaComentario)
+routes.post('/createpost',auth,ForumController.CreatePost)
+routes.post('/curtidapost',auth ,ForumController.CurtidaPost)
+routes.post('/createcomentario',auth , ForumController.CreateComentario)
+routes.post('/curtidacomentario', auth , ForumController.CurtidaComentario)
 
 
 routes.post('/alertasorte/allloterias', auth, AlertaSorteController.Allloterias)

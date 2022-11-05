@@ -43,7 +43,7 @@ class UserCotnroller {
             let {name, email, tel, password ,datanascimento ,uf ,cidade ,genero ,nickname ,
                 image , brekker, lunch, dinner, social, socialContact, rede, loteria} = req.body
                 
-                
+                console.log(req.body)
             const erros = validationResult(req)
             const salt = 10;
 
@@ -142,7 +142,36 @@ class UserCotnroller {
                         }
                 }
                 
+            }else {
+                if (tel) {
+                    const createSocial = await SocialModel.create({name: 'whatsapp'}).catch(async err=> {
+                        await UserModel.destroy({where:{id : createUsuario.id}})
+                        throw new Error ('não foi possivel criar a social ' + err.message)
+                    })
+                    network = {
+                        name : 'whatsapp',
+                        contact : tel,
+                        actived : true,
+                        user_id : createUsuario.id,
+                        social_id: createSocial.id
+                    }
+                }else{
+                    const createSocial = await SocialModel.create({name: 'whatsapp'}).catch(async err=> {
+                        await UserModel.destroy({where:{id : createUsuario.id}})
+                        throw new Error ('não foi possivel criar a social ' + err.message)
+                    })
+                    network = {
+                        name : 'e-mail',
+                        contact : email,
+                        actived : true,
+                        user_id : createUsuario.id,
+                        social_id: createSocial.id
+                    }
+                }
             }
+
+
+
             console.log(network)
             const redes = await RedeModel.create(network).catch(error => {throw new Error('não foi possivel criar redes :' + error.message)})
             

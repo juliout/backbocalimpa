@@ -24,6 +24,9 @@ const Post = database.define('post', {
     type: {
         type: Sequelize.STRING(100) 
     },
+    link: {
+        type: Sequelize.STRING(100)
+    },
     user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,

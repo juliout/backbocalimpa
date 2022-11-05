@@ -3,7 +3,7 @@ const axios = require('axios')
 const https = require('https')
 // const {SaveGroup} = require('../app/controllers/wppControllers/BlackFridayController')
 const teste = require('../app/services/Senders/BocaLimpaSender')
-const cron = require('node-cron')
+// const cron = require('node-cron')
 // const Client = teste()
 
 
@@ -18,6 +18,6 @@ app.listen(process.env.PORT || 3000, ()=>{
 // setTimeout(() => {
 //   SaveGroup(Client)
 // }, 60000);
-// cron.schedule('* */12 * * *', async ()=>{
+// cron.schedule('*/4 * * * *', async ()=>{
 //   SaveGroup(Client) 
 // })

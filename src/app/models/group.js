@@ -17,6 +17,9 @@ const Group = database.define('Group', {
         type: Sequelize.NUMBER,
 
     },
+    updated: {
+        type: Sequelize.STRING(100)
+    }
 },{timestamps: false})
 
 module.exports = Group;

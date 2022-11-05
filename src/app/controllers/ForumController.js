@@ -5,9 +5,8 @@ const ComentarioCurtidaModel = require('../models/comentarioCurtida')
 const UserModel = require('../models/user')
 
 class ForumController {
-
+//criação de post/mural da comunidade
     async CreatePost(req, res) {
-
         try {
             let {title, text, user_id, type, link} = req.body
 
@@ -29,21 +28,33 @@ class ForumController {
         }
 
     }
-
+//achar todos os posts/mural da comunidade
     async FindAllPosts(req, res) {
         try {
-            
-            let {type} = req.body
-            const post = await PostModel.findAll({ include:[
-                {model: UserModel,attributes:['email', 'name', 'genero', 'cidade', 'datanascimento']},
-                {model:PostCurtidaModel},
-                {model:ComentarioModel,include:[{model:ComentarioCurtidaModel},{model:UserModel,attributes:['name']}]},
-            ]}).catch(e=> {
-                throw new Error(e.message)
-            })
-            
-            res.status(200).json(post)
+            let {limit} = req.body
+
+            if (limit) {
+                const post = await PostModel.findAll({limit: limit, order:[['id', 'DESC']], include:[
+                    {model: UserModel,attributes:['email', 'name', 'genero', 'cidade', 'datanascimento']},
+                    {model:PostCurtidaModel},
+                    {model:ComentarioModel,include:[{model:ComentarioCurtidaModel},{model:UserModel,attributes:['name']}]},
+                ]}).catch(e=> {
+                    throw new Error(e.message)
+                })
+                res.status(200).json(post)
+            }else {
+                const post = await PostModel.findAll({order:[['id', 'DESC']], include:[
+                    {model: UserModel,attributes:['email', 'name', 'genero', 'cidade', 'datanascimento']},
+                    {model:PostCurtidaModel},
+                    {model:ComentarioModel,include:[{model:ComentarioCurtidaModel},{model:UserModel,attributes:['name']}]},
+                ]}).catch(e=> {
+                    throw new Error(e.message)
+                })
+                res.status(200).json(post)
+            }
+        
         } catch (error) {
+            console.log(error)
             return res.status(400).json({message: error.mensagem})
         }
 
@@ -90,7 +101,22 @@ class ForumController {
             return res.status(400).json({message: error.message})
         }
     }
+    async FindComentario (req, res) {
+        try {
+            let {id} = req.body
 
+            const findComentario = await ComentarioModel.findOne({where: {id}, include: [
+                {model : ComentarioCurtidaModel},
+                {model:UserModel,attributes:['name']}]}).catch(e=> {
+                throw new Error(e.message)
+            })
+            
+            return res.status(200).json(findComentario)
+        } catch (error) {
+            console.log(error)
+            return res.status(400).json({message: error.message})
+        }
+    }
     async CreateComentario(req, res) {
         try {
             let {text, user_id, post_id} = req.body
