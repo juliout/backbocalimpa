@@ -5,6 +5,7 @@ const https = require('https')
 const teste = require('../app/services/Senders/BocaLimpaSender')
 // const cron = require('node-cron')
 // const Client = teste()
+const MembroModel = require('../app/models/membro')
 
 
 app.listen(process.env.PORT || 3000, ()=>{
@@ -14,7 +15,11 @@ app.listen(process.env.PORT || 3000, ()=>{
   // })}).then(res => console.log(res.data)).catch(e=>console.log({message: e.message}))}
   //   action()
 })
-
+async function memb() {
+  const m = await MembroModel.findAll()
+  console.log(m.length)
+}
+memb()
 // setTimeout(() => {
 //   SaveGroup(Client)
 // }, 60000);

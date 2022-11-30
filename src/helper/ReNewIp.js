@@ -10,5 +10,5 @@ module.exports = async (value) => {
     rest = rest.join('')
     const response = await axios.get(`http://ip-api.com/json/${rest}`)
 
-    return (response.data)
+    return response.data
 }

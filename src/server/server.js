@@ -1,10 +1,9 @@
 require('dotenv').config()
-const automateSend = require('../helper/automateSend')
+//const automateSend = require('../helper/automateSend')
+const Sender = require('../app/services/Senders/BocaLimpaSender')
 const cron = require('node-cron')
-const SenderBocaLimpa = require('../app/services/Senders/bocaLimpa.js')
-
-
 const customExpress = require('./../app.js')
+const {SaveGroup} = require('../app/controllers/wppControllers/BlackFridayController')
 
 var fs = require("fs")
 var http = require("http")
@@ -23,5 +22,9 @@ var options = {
       console.log("Express server listening on port " + port)
     })
 
+    
+  // const Client = Sender()
 
-// cron.schedule('*/60 * * * * *', automateSend)
+  // cron.schedule('*/10 * * * *', async ()=>{
+  //   SaveGroup(Client)
+  // })

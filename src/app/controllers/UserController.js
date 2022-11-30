@@ -57,7 +57,7 @@ class UserCotnroller {
                 if (tel[2] !== '9') throw new Error('numero de celular invalido')
                 if (tel.length < 10 || tel.length > 11) throw new Error('numero de celular invalido')
             }
-            
+
             //verificaÃ§Ã£o do email.
             if (!erros.isEmpty()) throw new Error('E-mail invalido')
 
@@ -65,12 +65,12 @@ class UserCotnroller {
             // if(datanascimento) {
             //     if (datanascimento.length > 8) throw new Error('data com formato invalido')
             //     datanascimento = ReverseDate(datanascimento)
-            // } 
-            
+            // }
+
             //senha hash
             password = await bcrypt.hash(password, salt).catch(err=>{throw new Error(err.message)})
             if(!password) throw new Error('nÃ£o foi possivel converter a senha')
-            
+
             let user = {
                 name: name,
                 email: email,
@@ -141,7 +141,7 @@ class UserCotnroller {
                             social_id: createSocial.id
                         }
                 }
-                
+
             }else {
                 if (tel) {
                     const createSocial = await SocialModel.create({name: 'whatsapp'}).catch(async err=> {
@@ -169,75 +169,71 @@ class UserCotnroller {
                     }
                 }
             }
-
-
-
-            console.log(network)
             const redes = await RedeModel.create(network).catch(error => {throw new Error('não foi possivel criar redes :' + error.message)})
-            
+
             if(!redes) throw new Error('redes não foi criada')
 
             if(rede === 'bocaLimpa') {
 
             // adicionando 30minutos ao horario
-            if (brekker && lunch && dinner) {
-                brekker = AddTime(brekker)
-                lunch = AddTime(lunch)
-                dinner = AddTime(dinner)
-            }
+                if (brekker && lunch && dinner) {
+                    brekker = AddTime(brekker)
+                    lunch = AddTime(lunch)
+                    dinner = AddTime(dinner)
+                }
 
-            await HorarioModel.create({
-                name: 'brekker',
-                time : brekker,
-                user_id: createUsuario.id,
-                rede_id: redes.id,
-                actived: true,
-            }).catch(async e => {
-                
-                await RedeModel.destroy({where: {user_id: createUsuario.id}})
-                await SocialModel.destroy({where: {id : redes.social_id}})
-                await HorarioModel.destroy({where:{user_id : createUsuario.id}})
-                await UserModel.destroy({where:{id : createUsuario.id}})
-                throw new Error('tabela brekker nÃ£o foi criada'  + e.message)
-            })
+                await HorarioModel.create({
+                    name: 'brekker',
+                    time : brekker,
+                    user_id: createUsuario.id,
+                    rede_id: redes.id,
+                    actived: true,
+                }).catch(async e => {
 
-            await HorarioModel.create({
-                name: 'lunch',
-                time : lunch,
-                user_id: createUsuario.id,
-                rede_id: redes.id,
-                actived :  true
-            }).catch(async e => {
-              
-                await RedeModel.destroy({where: {user_id: createUsuario.id}})
-                await SocialModel.destroy({where: {id : redes.social_id}})
-                await HorarioModel.destroy({where:{user_id : createUsuario.id}})
-                await UserModel.destroy({where:{id : createUsuario.id}})
-                throw new Error('tabela lunch nÃ£o foi criada: ' + e.message)
-            })
+                    await RedeModel.destroy({where: {user_id: createUsuario.id}})
+                    await SocialModel.destroy({where: {id : redes.social_id}})
+                    await HorarioModel.destroy({where:{user_id : createUsuario.id}})
+                    await UserModel.destroy({where:{id : createUsuario.id}})
+                    throw new Error('tabela brekker nÃ£o foi criada'  + e.message)
+                })
 
-            await HorarioModel.create({
-                name: 'dinner',
-                time : dinner,
-                user_id: createUsuario.id,
-                rede_id: redes.id,
-                actived: true
-            }).catch(async e => {
-               
-                await RedeModel.destroy({where: {user_id: createUsuario.id}})
-                await SocialModel.destroy({where: {id : redes.social_id}})
-                await HorarioModel.destroy({where:{user_id : createUsuario.id}})
-                await UserModel.destroy({where:{id : createUsuario.id}})
-                throw new Error('model dinner nÃ£o foi criada'  + e.message)
-            })
+                await HorarioModel.create({
+                    name: 'lunch',
+                    time : lunch,
+                    user_id: createUsuario.id,
+                    rede_id: redes.id,
+                    actived :  true
+                }).catch(async e => {
+
+                    await RedeModel.destroy({where: {user_id: createUsuario.id}})
+                    await SocialModel.destroy({where: {id : redes.social_id}})
+                    await HorarioModel.destroy({where:{user_id : createUsuario.id}})
+                    await UserModel.destroy({where:{id : createUsuario.id}})
+                    throw new Error('tabela lunch nÃ£o foi criada: ' + e.message)
+                })
+
+                await HorarioModel.create({
+                    name: 'dinner',
+                    time : dinner,
+                    user_id: createUsuario.id,
+                    rede_id: redes.id,
+                    actived: true
+                }).catch(async e => {
+
+                    await RedeModel.destroy({where: {user_id: createUsuario.id}})
+                    await SocialModel.destroy({where: {id : redes.social_id}})
+                    await HorarioModel.destroy({where:{user_id : createUsuario.id}})
+                    await UserModel.destroy({where:{id : createUsuario.id}})
+                    throw new Error('model dinner nÃ£o foi criada'  + e.message)
+                })
             }
             if(rede === 'alerta-da-sorte') {
                 let allLoterias = ['megasena', 'lotofacil', 'duplasena', 'quina', 'supersete', 'timemania', 'lotomania', 'diadesorte', 'federal', 'loteca', 'milionaria']
-                    
+
                     loteria.map(n => {
                         allLoterias = allLoterias.filter(fil => fil!=n)
                     })
-                    
+
                     allLoterias.map(async lote => {
                         const createLoteria= await Loteria.create({
                             name: lote,
@@ -270,7 +266,7 @@ class UserCotnroller {
                             })
                         }
                     })
-                
+
             }
             // axios.post('https://api.pluga.co/v1/webhooks/MzkxODcyMTUwMDA4MDgwNzQyMVQxNjU2NjEzOTU2', {
             //     nome: name,
@@ -281,7 +277,7 @@ class UserCotnroller {
 
             const ReqIp = await ReNewIp(req.ip)
 
-            
+
             let IpUser = {}
 
             if (ReqIp.status !== 'fail') {
@@ -307,6 +303,7 @@ class UserCotnroller {
 
             return res.status(201).json({message : 'usuario Criado'})
         } catch (e) {
+            console.log(e)
             return res.status(400).json({message: e.message})
         }
     }
@@ -349,15 +346,15 @@ class UserCotnroller {
     async SessionValidate(req, res) {
         const {id, token} = req.body
 	try {
-        	await jwt.verify(token, SECRETPASS, (err, decoded) => {
-            		if(err) throw new Error ('nÃ£o autenticado') 
+        await jwt.verify(token, SECRETPASS, (err, decoded) => {
+            if(err) throw new Error ('nÃ£o autenticado')
 
-            		if (id != decoded.userId) {
-                	throw new Error ('nÃ£o autenticado')
-            		}	
-            
-            		return res.status(200).json({message: 'SessÃ£o valida'})
-        	});
+            if (id != decoded.userId) {
+            throw new Error ('nÃ£o autenticado')
+            }
+
+            return res.status(200).json({message: 'SessÃ£o valida'})
+        });
 	} catch (e) { 
 		return res.status(400).json({message: e.message}) 
 	}

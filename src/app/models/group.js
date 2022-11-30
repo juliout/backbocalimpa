@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const database = require('../../database/index')
+const Membro = require('./membro')
 
 const Group = database.define('Group', {
     id: {
@@ -21,5 +22,15 @@ const Group = database.define('Group', {
         type: Sequelize.STRING(100)
     }
 },{timestamps: false})
+
+Group.hasMany(Membro, {
+    foreignKey: 'groups_id',
+})
+
+Membro.belongsTo(Group, {
+    constraint: true,
+    foreignKey: 'groups_id',
+    onDelete: 'CASCADE',
+})
 
 module.exports = Group;
