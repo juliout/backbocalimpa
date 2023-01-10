@@ -5,7 +5,8 @@ const AlertaSorteController = require('../app/controllers/AlertaSorteController'
 const {AllGroupsApi, InviteGenerator} = require('../app/controllers/wppControllers/BlackFridayController')
 const {body} = require('express-validator')
 const auth = require('../app/middleware/auth')
-
+const {Sair} = require('../app/controllers/wppControllers/ChatController')
+const {CadastrarPergunta,CadastrarSelected, CadastrarPessoa} = require('../app/controllers/QuizController')
 
 routes.post('/createuser',[body('email').isEmail()], UserController.CreateUser)
 
@@ -47,6 +48,11 @@ routes.post('/alertasorte/desativar', auth, AlertaSorteController.Desativar)
 
 routes.get('/blackfriday/allgroups', AllGroupsApi)
 routes.get('/blackfriday/invite', InviteGenerator)
+// routes.post('/wpp/sair', Sair)
 
+
+routes.post('/quiz/cadastrarpergunta', CadastrarPergunta)
+routes.post('/quiz/cadastrarpessoa', CadastrarPessoa)
+routes.post('/quiz/cadastrarselected', CadastrarSelected)
 
 module.exports = routes;

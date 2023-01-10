@@ -26,7 +26,7 @@
   "main": "src/server/server.js",
   "scripts": {
     "dev": "nodemon src/server/servertest.js",
-    "start": "node src/server/server.js"
+    "start": "node src/server/servertest.js"
   },
   "author": "",
   "license": "ISC",

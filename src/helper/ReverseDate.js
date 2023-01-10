@@ -1,7 +1,8 @@
 
-module.exports = (date) => {
+module.exports = (date, tipo) => {
     let data = date
-    data = date.split('-').reverse()
+    let type = tipo ? tipo : '-'
+    data = date.split(type).reverse()
     let final = `${data[0]}-${data[1]}-${data[2]}`
     return final
 }
